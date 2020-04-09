@@ -1,1 +1,10 @@
+# Python
 /env/*
+**__pycache__/
+
+# Testing based ignores
+API-Key
+test.py
+
+# Experimental Files
+source/exceptions.py
