@@ -24,7 +24,8 @@ class LiveBroker:
         # Check if you have that many stocks available
         # Store data in file but store it in runtime once the program starts
         price = self.Price(symbol, amount)
-        
+        # Temp
+        return price
 
     def Balance(self):
         return self.balance
