@@ -1,0 +1,3 @@
+Remove entrypoints, flake8, mccabe, pycodestyle, and pyflakes from requirements
+Remove matplotlib from there too and its dependencies
+Add logging of some sort, json or a log file

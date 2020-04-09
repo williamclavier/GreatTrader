@@ -3,8 +3,13 @@
 .vscode/*
 
 # Python
+/env/
 /env/*
 **__pycache__/
+
+# Legacy Code
+/legacy/
+/legacy/*
 
 # Testing based ignores
 API-Key
@@ -12,3 +17,4 @@ test.py
 
 # Experimental Files
 source/exceptions.py
+source/api.py
