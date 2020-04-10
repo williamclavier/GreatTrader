@@ -1,4 +1,7 @@
 Remove entrypoints, flake8, mccabe, pycodestyle, and pyflakes from requirements
 Remove matplotlib from there too and its dependencies
-Add logging of some sort, json or a log file
+Add logging with json files in data/ directory
 Finish broker.Broker.Sell()
+Add the expandibility for making multiple different trading indicators 
+Give and example indicator for public use but make more for private use
+SLOW down and add documentation to the code!
