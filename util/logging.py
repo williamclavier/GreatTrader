@@ -14,30 +14,42 @@ class Log:
             self.filename = data_folder / "Virtual.db"
         else:
             self.filename = data_folder / "Real.db"
+        self.createTable()
 
     def createTable(self):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
         try:
-            cursor.execute('CREATE TABLE {} (date VARCHAR, \
+            cursor.execute('CREATE TABLE buy (date VARCHAR, \
                 time VARCHAR, symbol VARCHAR, amount INT, \
-                cost FLOAT)'.format(self.name))
+                cost FLOAT)')
+            conn.commit()
+            cursor.execute('CREATE TABLE sell (date VARCHAR, \
+                time VARCHAR, symbol VARCHAR, amount INT, \
+                cost FLOAT)')
             conn.commit()
         except sql.OperationalError:
             pass
         conn.close()
 
-    def Write(self, data):
+    def Write(self, data, type):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO {0} (date, time, symbol, \
-            amount, cost) VALUES (?,?,?,?,?)'.format(self.name),
+            amount, cost) VALUES (?,?,?,?,?)'.format(type),
             (data['date'], data['time'], data['symbol'], int(data['amount']),
                 float(data['cost']))
         )
         conn.commit()
         conn.close()
+
+    def Read(self, type):
+        conn = sql.connect(self.filename)
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM {}'.format(type))
+        data = cursor.fetchall()
+        return data
 
     def Buy(self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
@@ -49,5 +61,17 @@ class Log:
             "amount": amount,
             "cost": price
         }
-        self.createTable()
-        self.Write(dataToWrite)
+        self.Write(dataToWrite, "buy")
+
+    def Sell(
+            self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
+            time=datetime.now().strftime('%H:%M:%S')):
+        price = Price(symbol, amount)
+        dataToWrite = {
+            "date": date,
+            "time": time,
+            "symbol": symbol,
+            "amount": amount,
+            "cost": price
+        }
+        self.Write(dataToWrite, "sell")
