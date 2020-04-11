@@ -1,21 +1,20 @@
+from util.stock import Price
+from util.logging import Log
+
 
 class LiveBroker:
-    def __init__(self, API, balance=1000):
+    def __init__(self, name, balance=1000, debug=False):
         self.balance = balance
-        self.api = API
-        self.filename = "virtual-{}.json"
-
-    def Price(self, symbol, amount=1):
-        data, meta_data = self.api.get_intraday(symbol=symbol, interval="1min")
-        cost = data['4. close'][0]
-        return (float(cost) * amount)
+        self.name = name
+        self.debug = debug
+        self.Log = Log(name)
 
     def Buy(self, symbol, amount=1):
-        price = self.Price(symbol, amount)
+        price = Price(symbol, amount)
         if self.haveEnoughMoney(price):
-            # includes logging to json
+            self.Log.Buy(symbol, amount)
             # purchase stock
-            self.deductBalance(price)
+            self.decreaseBal(price)
             return True
         else:
             return False
@@ -23,21 +22,30 @@ class LiveBroker:
     def Sell(self, symbol, amount=1):
         # Check if you have that many stocks available
         # Store data in file but store it in runtime once the program starts
-        price = self.Price(symbol, amount)
+        price = Price(symbol, amount)
         # Temp
         return price
 
     def Balance(self):
-        return self.balance
+        return round(float(self.balance), 4)
+
+    def Holdings(self):
+        return None
 
     def haveEnoughMoney(self, cost, amount=1):
-        if self.balance >= (cost * amount):
+        if self.balance >= round((cost * amount), 4):
             return True
         else:
             return False
 
     def decreaseBal(self, value):
-        self.balance -= value
+        """
+        Only enabled for debugging
+        """
+        self.balance = round(self.balance - value, 4)
 
     def increaseBal(self, value):
-        self.balance += value
+        """
+        Only enabled for debugging
+        """
+        self.balance = round(self.balance + value, 4)

@@ -2,6 +2,8 @@ class Error(Exception):
     """  Base Class for exceptions in this module.  """
     pass
 
+# Remove Later Keeping as an example
+
 
 class APIKeyError(Error):
     """

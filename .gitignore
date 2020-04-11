@@ -7,6 +7,10 @@
 /env/*
 **__pycache__/
 
+# Data
+/data/Virtual.db
+/data/Real.db
+
 # Legacy Code
 /legacy/
 /legacy/*
