@@ -3,11 +3,10 @@ from util.logging import Log
 
 
 class LiveBroker:
-    def __init__(self, name, balance=1000, debug=False):
+    def __init__(self, balance=100000, debug=False):
         self.balance = balance
-        self.name = name
         self.debug = debug
-        self.Log = Log(name)
+        self.Log = Log()
 
     def Buy(self, symbol, amount=1):
         price = Price(symbol, amount)
@@ -20,6 +19,7 @@ class LiveBroker:
             return False
 
     def Sell(self, symbol, amount=1):
+        self.Log.Sell(symbol, amount)
         # Check if you have that many stocks available
         # Store data in file but store it in runtime once the program starts
         price = Price(symbol, amount)
@@ -30,7 +30,53 @@ class LiveBroker:
         return round(float(self.balance), 4)
 
     def Holdings(self):
-        return None
+        Bought = self.Log.Read("buy")
+        BoughtList = {}
+        Total = 0
+        for trade in Bought:
+            if trade[2] in BoughtList:
+                val = BoughtList[trade[2]]
+                BoughtList[trade[2]] = val + trade[4]
+            else:
+                BoughtList[trade[2]] = trade[4]
+        Sold = self.Log.Read("sell")
+        SoldList = {}
+        for trade in Sold:
+            if trade[2] in SoldList:
+                val = SoldList[trade[2]]
+                SoldList[trade[2]] = val + trade[4]
+            else:
+                SoldList[trade[2]] = trade[4]
+        for stock in BoughtList:
+            Total -= BoughtList[stock]
+        for stock in SoldList:
+            Total += SoldList[stock]
+        # Now for unsold stock
+        SoldList = {}
+        BoughtList = {}
+        BoughtList = {}
+        for trade in Bought:
+            if trade[2] in BoughtList:
+                val = BoughtList[trade[2]]
+                BoughtList[trade[2]] = val + trade[3]
+            else:
+                BoughtList[trade[2]] = trade[3]
+        Sold = self.Log.Read("sell")
+        SoldList = {}
+        for trade in Sold:
+            if trade[2] in SoldList:
+                val = SoldList[trade[2]]
+                SoldList[trade[2]] = val + trade[3]
+            else:
+                SoldList[trade[2]] = trade[3]
+        Combined = {
+            key: BoughtList[key] - SoldList.get(key, 0)
+            for key in BoughtList.keys()
+        }
+        Subtotal = 0
+        for stock in Combined:
+            Subtotal += Price(stock, Combined[stock])
+        return round(Subtotal + Total, 4) + self.balance
 
     def haveEnoughMoney(self, cost, amount=1):
         if self.balance >= round((cost * amount), 4):

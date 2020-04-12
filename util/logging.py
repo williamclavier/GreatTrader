@@ -8,8 +8,7 @@ data_folder = Path("data/")
 
 
 class Log:
-    def __init__(self, name, virtual=True):
-        self.name = name
+    def __init__(self, virtual=True):
         if virtual:
             self.filename = data_folder / "Virtual.db"
         else:
@@ -19,7 +18,7 @@ class Log:
     def createTable(self):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
-        try:
+        if not self.filename.exists():
             cursor.execute('CREATE TABLE buy (date VARCHAR, \
                 time VARCHAR, symbol VARCHAR, amount INT, \
                 cost FLOAT)')
@@ -28,8 +27,6 @@ class Log:
                 time VARCHAR, symbol VARCHAR, amount INT, \
                 cost FLOAT)')
             conn.commit()
-        except sql.OperationalError:
-            pass
         conn.close()
 
     def Write(self, data, type):
