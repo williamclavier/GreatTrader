@@ -1,12 +1,10 @@
-Add balance history (logging module)
-Find a way to get up to date stock data because I don't believe yfinance is perfectly in sync
 Code the Double Peak strategy
-Learn how to do class types
-
-Later:
-Add Pattern Day Trade Limit as an option
+Learn parent and child classes for the strategies
+Learn MORE about machine learning!
 Add documentation to the code!
 Cleanup Imports at the top of files. Make em neat!
-Potentially add a debugging feature
+
+Later:
+!Add Pattern Day Trade Limit as an option
 Add the expandibility for making multiple different trading indicators
-Review Database file choice and formats
+Find a way to get up to date stock data because I don't believe yfinance is perfectly in sync
