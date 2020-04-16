@@ -6,6 +6,11 @@ from time import sleep
 Broker = LiveBroker()
 # Broker.Buy("GOOG", 6)
 # Broker.Sell("GOOG", 5)
+"""this is so we don't get too many different stocks at one period of time
+amountNeeded = 5 - len(Holdings())
+TopGainers(amountNeeded)
+"""
+
 try:
     Start = Broker.startBalance
     while True:
