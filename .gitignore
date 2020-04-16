@@ -10,7 +10,7 @@
 # Data
 /data/Virtual.db
 /data/Real.db
-
+/logs/*
 # Legacy Code
 /legacy/
 /legacy/*

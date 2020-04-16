@@ -11,7 +11,7 @@ class LiveBroker:
         self.balance = balance
         self.debug = debug
         self.Log = Log()
-        logfolder = Path("log/")
+        logfolder = Path("logs/")
         logging.basicConfig(
             filename=logfolder / "Transactions.log",
             format='%(asctime)s %(message)s')
