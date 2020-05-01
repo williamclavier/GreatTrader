@@ -11,6 +11,9 @@ class LiveBroker:
         self.balance = balance
         self.debug = debug
         self.Log = Log()
+        self.datafolder = Path("data/")
+        if not ((self.datafolder / "Virtual.db").exists() or (self.datafolder / "Real.db").exists()):
+            self.Log.createTable()
         logfolder = Path("logs/")
         logging.basicConfig(
             filename=logfolder / "Transactions.log",

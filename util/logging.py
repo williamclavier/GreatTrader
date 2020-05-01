@@ -13,7 +13,6 @@ class Log:
             self.filename = data_folder / "Virtual.db"
         else:
             self.filename = data_folder / "Real.db"
-        self.createTable()
 
     def createTable(self):
         conn = sql.connect(self.filename)

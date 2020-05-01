@@ -1,9 +1,7 @@
 from util.logging import Log
 
-Log = Log()
-
-
 def Combine(item):
+    Log = Log()
     if item.lower() == "date":
         index = 0
     elif item.lower() == "time":
