@@ -1,4 +1,6 @@
 # GreatTrader
+[![MIT License](https://img.shields.io/badge/license-GNU-blue.svg?style=flat)](https://choosealicense.com/licenses/gpl-3.0/)
+
 Machine Learning based stock trading assistant.
 
 ## Requirements:
