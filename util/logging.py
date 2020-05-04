@@ -1,5 +1,5 @@
 # Logs all the data for the program's actions
-from util.stock import Price
+from util.stock import price
 from pathlib import Path
 from datetime import datetime, date
 import sqlite3 as sql
@@ -14,13 +14,13 @@ class Log:
         else:
             self.filename = data_folder / "Real.db"
 
-    def createTable(self):
+    def create_table(self):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
         if not self.filename.exists():
-            cursor.execute('CREATE TABLE buy (date VARCHAR, \
+            cursor.execute("CREATE TABLE buy (date VARCHAR, \
                 time VARCHAR, symbol VARCHAR, amount INT, \
-                cost FLOAT)')
+                cost FLOAT)")
             conn.commit()
             cursor.execute('CREATE TABLE sell (date VARCHAR, \
                 time VARCHAR, symbol VARCHAR, amount INT, \
@@ -28,46 +28,46 @@ class Log:
             conn.commit()
         conn.close()
 
-    def Write(self, data, type):
+    def write(self, data, action_type):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO {0} (date, time, symbol, \
-            amount, cost) VALUES (?,?,?,?,?)'.format(type),
+            'INSERT INTO {0} ("date", time, symbol, \
+            amount, cost) VALUES (?,?,?,?,?)'.format(action_type),
             (data['date'], data['time'], data['symbol'], int(data['amount']),
                 float(data['cost']))
         )
         conn.commit()
         conn.close()
 
-    def Read(self, type):
+    def read(self, action_type):
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM {}'.format(type))
+        cursor.execute('SELECT * FROM {}'.format(action_type))
         data = cursor.fetchall()
         return data
 
-    def Buy(self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
+    def buy(self, symbol, amount, current_date=date.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
-        price = Price(symbol, amount)
-        dataToWrite = {
-            "date": date,
+        price = price(symbol, amount)
+        data_to_write = {
+            "date": current_date,
             "time": time,
             "symbol": symbol,
             "amount": amount,
             "cost": price
         }
-        self.Write(dataToWrite, "buy")
+        self.write(data_to_write, "buy")
 
-    def Sell(
-            self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
+    def sell(
+            self, symbol, amount, current_date=date.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
-        price = Price(symbol, amount)
-        dataToWrite = {
-            "date": date,
+        price = price(symbol, amount)
+        data_to_write = {
+            "date": current_date,
             "time": time,
             "symbol": symbol,
             "amount": amount,
             "cost": price
         }
-        self.Write(dataToWrite, "sell")
+        self.write(data_to_write, "sell")

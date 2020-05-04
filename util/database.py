@@ -1,12 +1,12 @@
 from util.logging import Log
 
-def Combine(item):
-    Log = Log()
+
+def combine(item):
     if item.lower() == "date":
         index = 0
     elif item.lower() == "time":
         index = 1
-    # 2 is the Ticker
+    # the second index is the ticker
     elif item.lower() == "amount":
         index = 3
     elif item.lower() == "cost":
@@ -15,23 +15,23 @@ def Combine(item):
         print("{} isn't a correct option. \
                 (util.database.findDifference".format(item))
         return None
-    Bought = Log.Read("buy")
-    Sold = Log.Read("sell")
-    soldList = {}
-    boughtList = {}
-    for trade in Bought:
+    bought = Log().read("buy")
+    sold = Log().read("sell")
+    sold_list = {}
+    bought_list = {}
+    for trade in bought:
         # trade: ('2020-04-11', '19:01:34', 'SPY', 3, 834.6)
-        if trade[2] in boughtList:
-            val = boughtList[trade[2]]
-            boughtList[trade[2]] = val + trade[index]
+        if trade[2] in bought_list:
+            val = bought_list[trade[2]]
+            bought_list[trade[2]] = val + trade[index]
         else:
-            boughtList[trade[2]] = trade[index]
-    for trade in Sold:
+            bought_list[trade[2]] = trade[index]
+    for trade in sold:
         # trade: ('2020-04-11', '19:01:34', 'SPY', 3, 834.6)
-        if trade[2] in soldList:
-            val = soldList[trade[2]]
-            soldList[trade[2]] = val + trade[index]
+        if trade[2] in sold_list:
+            val = sold_list[trade[2]]
+            sold_list[trade[2]] = val + trade[index]
         else:
-            soldList[trade[2]] = trade[index]
-    Trades = [boughtList, soldList]
-    return Trades
+            sold_list[trade[2]] = trade[index]
+    trades = [bought_list, sold_list]
+    return trades

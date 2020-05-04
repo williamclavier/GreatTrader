@@ -1,5 +1,5 @@
-from util.stock import Price
-from util.database import Combine
+from util.stock import price
+from util.database import combine
 from util.logging import Log
 from pathlib import Path
 import logging
@@ -7,93 +7,96 @@ import logging
 
 class LiveBroker:
     def __init__(self, balance=100000, debug=False):
-        self.startBalance = balance
+        self.start_bal = balance
         self.balance = balance
         self.debug = debug
         self.Log = Log()
-        self.datafolder = Path("data/")
-        if not ((self.datafolder / "Virtual.db").exists() or (self.datafolder / "Real.db").exists()):
-            self.Log.createTable()
-        logfolder = Path("logs/")
+        self.data_folder = Path("data/")
+        if not ((self.data_folder / "Virtual.db").exists() or (self.data_folder / "Real.db").exists()):
+            self.Log.create_table()
+        log_folder = Path("logs/")
         logging.basicConfig(
-            filename=logfolder / "Transactions.log",
+            filename=log_folder / "Transactions.log",
             format='%(asctime)s %(message)s')
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)
 
-    def Buy(self, symbol, amount=1):
-        price = Price(symbol, amount)
-        if self.haveEnoughMoney(price):
-            self.Log.Buy(symbol, amount)
+    def buy(self, symbol, amount=1):
+        price = price(symbol, amount)
+        if self.have_enough_money(price):
+            self.Log.buy(symbol, amount)
             self.logger.info("Buy: {} x{} @ ${} each. Balance: {} \
                     Holdings: {} Total: {}".format(
-                        symbol, amount, price, self.balance, self.Holdings(),
-                        self.balance + self.Holdings()))
+                        symbol, amount, price, self.balance, self.holdings(),
+                        self.balance + self.holdings()))
             # purchase stock
-            self.decreaseBal(price)
+            self.decrease_bal(price)
             return True
         else:
             return False
 
-    def Sell(self, symbol, amount=1):
+    def sell(self, symbol, amount=1):
         # Check if you have that many stocks available
-        price = Price(symbol, amount)
-        Trades = Combine("amount")
-        CombinedList = {
-            key: Trades[0][key] - Trades[1].get(key, 0)
-            for key in Trades[0].keys()
+        price = price(symbol, amount)
+        trades = combine("amount")
+        combined_list = {
+            key: trades[0][key] - trades[1].get(key, 0)
+            for key in trades[0].keys()
         }
-        for ticker in CombinedList:
+        # new addition, not sure if this helps or not
+        available = ""
+        for ticker in combined_list:
             if ticker == symbol:
-                available = CombinedList[ticker]
-        if amount <= available:
-            self.Log.Sell(symbol, amount)
+                available = combined_list[ticker]
+        # used to be "if amount <= available:
+        if amount <= len(available):
+            self.Log.sell(symbol, amount)
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
                             symbol, amount, price, self.balance,
-                            self.Holdings(), self.balance + self.Holdings()))
+                            self.holdings(), self.balance + self.holdings()))
             return True
         else:
             return False
 
-    def Balance(self):
+    def balance(self):
         return round(float(self.balance), 4)
 
-    def Holdings(self):
-        global Combined
-        Total = 0
-        Trades = Combine('cost')
-        # Trades[0] = boughtList; Trades[1] = soldList
-        for stock in Trades[0]:
-            Total -= Trades[0][stock]
-        for stock in Trades[1]:
-            Total += Trades[1][stock]
+    def holdings(self):
+        # global Combined remove this later if no issues
+        total = 0
+        trades = combine('cost')
+        # trades[0] = boughtList; trades[1] = soldList
+        for stock in trades[0]:
+            total -= trades[0][stock]
+        for stock in trades[1]:
+            total += trades[1][stock]
         # Now for unsold stock
-        Trades = Combine('amount')
-        # Trades[0] = boughtList; Trades[1] = soldList
-        # CombinedList is the difference in corresponding values
-        CombinedList = {
-            key: Trades[0][key] - Trades[1].get(key, 0)
-            for key in Trades[0].keys()
+        trades = combine('amount')
+        # trades[0] = boughtList; trades[1] = soldList
+        # combined_list is the difference in corresponding values
+        combined_list = {
+            key: trades[0][key] - trades[1].get(key, 0)
+            for key in trades[0].keys()
         }
-        Subtotal = 0
-        for stock in CombinedList:
-            Subtotal += Price(stock, CombinedList[stock])
-        return round(Subtotal + Total, 4) + self.balance
+        subtotal = 0
+        for stock in combined_list:
+            subtotal += price(stock, combined_list[stock])
+        return round(subtotal + total, 4) + self.balance
 
-    def haveEnoughMoney(self, cost, amount=1):
+    def have_enough_money(self, cost, amount=1):
         if self.balance >= round((cost * amount), 4):
             return True
         else:
             return False
 
-    def decreaseBal(self, value):
+    def decrease_bal(self, value):
         """
         Only enabled for debugging
         """
         self.balance = round(self.balance - value, 4)
 
-    def increaseBal(self, value):
+    def increase_bal(self, value):
         """
         Only enabled for debugging
         """
