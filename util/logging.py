@@ -1,5 +1,5 @@
 # Logs all the data for the program's actions
-from util.stock import price
+import util.stock
 from pathlib import Path
 from datetime import datetime, date
 import sqlite3 as sql
@@ -13,11 +13,12 @@ class Log:
             self.filename = data_folder / "Virtual.db"
         else:
             self.filename = data_folder / "Real.db"
+        self.create_table()
 
     def create_table(self):
-        conn = sql.connect(self.filename)
-        cursor = conn.cursor()
-        if not self.filename.exists():
+        try:
+            conn = sql.connect(self.filename)
+            cursor = conn.cursor()
             cursor.execute("CREATE TABLE buy (date VARCHAR, \
                 time VARCHAR, symbol VARCHAR, amount INT, \
                 cost FLOAT)")
@@ -26,7 +27,10 @@ class Log:
                 time VARCHAR, symbol VARCHAR, amount INT, \
                 cost FLOAT)')
             conn.commit()
-        conn.close()
+            conn.close()
+        # if the table already exists just move on
+        except sql.OperationalError:
+            pass
 
     def write(self, data, action_type):
         conn = sql.connect(self.filename)
@@ -49,7 +53,7 @@ class Log:
 
     def buy(self, symbol, amount, current_date=date.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
-        price = price(symbol, amount)
+        price = util.stock.price(symbol, amount)
         data_to_write = {
             "date": current_date,
             "time": time,
@@ -62,7 +66,7 @@ class Log:
     def sell(
             self, symbol, amount, current_date=date.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
-        price = price(symbol, amount)
+        price = util.stock.price(symbol, amount)
         data_to_write = {
             "date": current_date,
             "time": time,

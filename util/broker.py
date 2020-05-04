@@ -1,4 +1,4 @@
-from util.stock import price
+import util.stock
 from util.database import combine
 from util.logging import Log
 from pathlib import Path
@@ -11,9 +11,6 @@ class LiveBroker:
         self.balance = balance
         self.debug = debug
         self.Log = Log()
-        self.data_folder = Path("data/")
-        if not ((self.data_folder / "Virtual.db").exists() or (self.data_folder / "Real.db").exists()):
-            self.Log.create_table()
         log_folder = Path("logs/")
         logging.basicConfig(
             filename=log_folder / "Transactions.log",
@@ -22,34 +19,34 @@ class LiveBroker:
         self.logger.setLevel(logging.DEBUG)
 
     def buy(self, symbol, amount=1):
-        price = price(symbol, amount)
+        price = util.stock.price(symbol, amount)
         if self.have_enough_money(price):
+            # purchase stock
+            self.decrease_bal(price)
+            # Log it
             self.Log.buy(symbol, amount)
             self.logger.info("Buy: {} x{} @ ${} each. Balance: {} \
                     Holdings: {} Total: {}".format(
                         symbol, amount, price, self.balance, self.holdings(),
                         self.balance + self.holdings()))
-            # purchase stock
-            self.decrease_bal(price)
             return True
         else:
             return False
 
     def sell(self, symbol, amount=1):
         # Check if you have that many stocks available
-        price = price(symbol, amount)
+        price = util.stock.price(symbol, amount)
         trades = combine("amount")
         combined_list = {
             key: trades[0][key] - trades[1].get(key, 0)
             for key in trades[0].keys()
         }
-        # new addition, not sure if this helps or not
-        available = ""
+        available = 0
         for ticker in combined_list:
             if ticker == symbol:
                 available = combined_list[ticker]
         # used to be "if amount <= available:
-        if amount <= len(available):
+        if amount <= available:
             self.Log.sell(symbol, amount)
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
@@ -81,7 +78,7 @@ class LiveBroker:
         }
         subtotal = 0
         for stock in combined_list:
-            subtotal += price(stock, combined_list[stock])
+            subtotal += util.stock.price(stock, combined_list[stock])
         return round(subtotal + total, 4) + self.balance
 
     def have_enough_money(self, cost, amount=1):
