@@ -1,18 +1,2 @@
-class Error(Exception):
-    """  Base Class for exceptions in this module.  """
-    pass
-
-# Remove Later Keeping as an example
-
-
-class APIKeyError(Error):
-    """
-    Exception raised when there is an issue with the APIKey
-
-    Attributes:
-        APIKey -- The APIKey in the API-Key File
-        message -- Message to be displayed to the user
-    """
-    def __init__(self, APIKey, message):
-        self.APIKey = APIKey
-        self.message = message
+# Well if I do get around to making errors and exceptions then they will end up here
+# As of right now I am just focused on finishing the code the way it is without more to get confused with.
