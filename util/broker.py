@@ -6,6 +6,12 @@ import logging
 
 
 class LiveBroker:
+    """Virtual broker to trade with.
+
+    Keyword Arguments:
+    balance -- the broker account start balance (default 100000)
+    debug -- enables debug logging (default False)
+    """
     def __init__(self, balance=100000, debug=False):
         self.start_bal = balance
         self.balance = balance
@@ -18,8 +24,14 @@ class LiveBroker:
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)
 
-    def buy(self, symbol, amount=1):
-        price = util.stock.price(symbol, amount)
+    def buy(self, ticker, amount):
+        """Purchases stocks.
+
+        Arguments:
+        ticker -- the ticker to be purchased
+        amount -- the quantity of stocks to be purchased
+        """
+        price = util.stock.price(ticker, amount)
         if self.have_enough_money(price):
             # purchase stock
             self.decrease_bal(price)
@@ -33,31 +45,34 @@ class LiveBroker:
         else:
             return False
 
-    def sell(self, symbol, amount=1):
+    def sell(self, ticker, amount):
+        """Sells stocks.
+
+        Arguments:
+        ticker -- the ticker to be sold
+        amount -- the quantity of stocks to be sold
+        """
         # Check if you have that many stocks available
-        price = util.stock.price(symbol, amount)
+        price = util.stock.price(ticker, amount)
         trades = combine("amount")
         combined_list = {
             key: trades[0][key] - trades[1].get(key, 0)
             for key in trades[0].keys()
         }
         available = 0
-        for ticker in combined_list:
-            if ticker == symbol:
-                available = combined_list[ticker]
+        for owned_ticker in combined_list:
+            if owned_ticker == ticker:
+                available = combined_list[owned_ticker]
         # used to be "if amount <= available:
         if amount <= available:
             self.Log.sell(symbol, amount)
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
-                            symbol, amount, price, self.balance,
+                            ticker, amount, price, self.balance,
                             self.holdings(), self.balance + self.holdings()))
             return True
         else:
             return False
-
-    def balance(self):
-        return round(float(self.balance), 4)
 
     def holdings(self):
         # global Combined remove this later if no issues
@@ -81,20 +96,17 @@ class LiveBroker:
             subtotal += util.stock.price(stock, combined_list[stock])
         return round(subtotal + total, 4) + self.balance
 
-    def have_enough_money(self, cost, amount=1):
+    def have_enough_money(self, cost, amount):
+        """Performs simple math to verify you can afford the stocks.
+
+        Arguments:
+        cost -- the cost of one singular stock
+        amount -- the amount of stocks to be purchased
+
+        Returns:
+        Bool -- if it is affordable, will return True
+        """
         if self.balance >= round((cost * amount), 4):
             return True
         else:
             return False
-
-    def decrease_bal(self, value):
-        """
-        Only enabled for debugging
-        """
-        self.balance = round(self.balance - value, 4)
-
-    def increase_bal(self, value):
-        """
-        Only enabled for debugging
-        """
-        self.balance = round(self.balance + value, 4)
