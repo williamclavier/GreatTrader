@@ -2,18 +2,22 @@ from util.logging import Log
 
 
 def combine(item):
-    if item.lower() == "date":
-        index = 0
-    elif item.lower() == "time":
-        index = 1
+    """Combines the bought and sold database data.
+
+    Arguments:
+    column -- the column to gather data from in the bought and sold tables
+
+    Returns:
+    trades -- [bought_list, sold_list]
+    """
     # the second index is the ticker
-    elif item.lower() == "amount":
+    if item.lower() == "amount":
         index = 3
     elif item.lower() == "cost":
         index = 4
     else:
         print("{} isn't a correct option. \
-                (util.database.findDifference".format(item))
+                (util.database.combine)".format(item))
         return None
     bought = Log().read("buy")
     sold = Log().read("sell")
