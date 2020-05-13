@@ -28,7 +28,7 @@ class LiveBroker:
             self.logger.info("Buy: {} x{} @ ${} each. Balance: {} \
                     Holdings: {} Total: {}".format(
                         symbol, amount, price, self.balance, self.holdings(),
-                        self.balance + self.holdings()))
+                        self.valuation()))
             return True
         else:
             return False
@@ -51,7 +51,7 @@ class LiveBroker:
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
                             symbol, amount, price, self.balance,
-                            self.holdings(), self.balance + self.holdings()))
+                            self.holdings(), self.valuation()))
             return True
         else:
             return False
@@ -59,7 +59,7 @@ class LiveBroker:
     def balance(self):
         return round(float(self.balance), 4)
 
-    def holdings(self):
+    def holdings(self, amount="total"):
         # global Combined remove this later if no issues
         total = 0
         trades = combine('cost')
@@ -79,7 +79,21 @@ class LiveBroker:
         subtotal = 0
         for stock in combined_list:
             subtotal += util.stock.price(stock, combined_list[stock])
-        return round(subtotal + total, 4) + self.balance
+        if amount == "total":
+            return round(subtotal + total, 4) + self.balance
+        elif amount == "temp" or amount == "current":
+            return round(subtotal, 4)
+        else:
+            return round(subtotal + total, 4) + self.balance
+
+    @staticmethod
+    def possessions():
+        trades = combine("amount")
+        combined_list = {
+            key: trades[0][key] - trades[1].get(key, 0)
+            for key in trades[0].keys()
+        }
+        return combined_list
 
     def have_enough_money(self, cost, amount=1):
         if self.balance >= round((cost * amount), 4):
