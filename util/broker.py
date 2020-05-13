@@ -68,25 +68,13 @@ class LiveBroker:
             self.Log.sell(symbol, amount)
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
-<<<<<<< HEAD
-                            symbol, amount, price, self.balance,
-                            self.holdings(), self.valuation()))
-=======
                             ticker, amount, price, self.balance,
                             self.holdings(), self.balance + self.holdings()))
->>>>>>> f6134058816510a1c587f1da8bcb872e343c8f32
             return True
         else:
             return False
 
-<<<<<<< HEAD
-    def balance(self):
-        return round(float(self.balance), 4)
-
-    def holdings(self, amount="total"):
-=======
     def holdings(self):
->>>>>>> f6134058816510a1c587f1da8bcb872e343c8f32
         # global Combined remove this later if no issues
         total = 0
         trades = combine('cost')
