@@ -14,14 +14,14 @@
 # Data
 /data/Virtual.db
 /data/Real.db
-# Legacy Code
-/legacy/
-/legacy/*
+
 
 # Testing based ignores
-API-Key
 test.py
 
 # Experimental Files
-source/exceptions.py
-source/api.py
+util/exceptions.py
+
+strategies/*
+/strategies/
+!/strategies/example.py
