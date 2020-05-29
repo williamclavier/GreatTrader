@@ -1,13 +1,16 @@
 # this is currently for testing but will be where the main app is soon!!!
-from util.broker import LiveBroker
-from util.stock import top_gainers
+from src.broker import LiveBroker
+from src.stock import top_gainers
 from datetime import datetime as dt
 from time import sleep
 
 Broker = LiveBroker()
-# Broker.buy("GOOG", 6)
-# Broker.sell("GOOG", 20)
+Broker.buy("GOOG", 6)
+Broker.sell("GOOG", 4)
 # this is so we don't get too many different stocks at one period of time
+print(Broker.holdings(amount="total"))
+print(Broker.holdings(amount="temp"))
+"""
 amountNeeded = 5 - len(Broker.possessions())
 print(top_gainers(amountNeeded))
 
@@ -25,4 +28,4 @@ try:
             holdings, percentString))
         sleep(1)
 except KeyboardInterrupt:
-    pass
+    pass"""
