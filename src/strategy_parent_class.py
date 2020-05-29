@@ -1,17 +1,19 @@
 import yfinance as yf
-import pandas as pd
+# import pandas as pd
 import numpy as np
 from datetime import datetime as dt
 import matplotlib.pyplot as plt
+
 plt.style.use("fivethirtyeight")
 
 
-class Parent_Strategy:
+class ParentStrategy:
     """Base parent class for all strategies.
 
     Arguments:
     ticker -- the stock's ticker
     """
+
     def __init__(self, ticker):
         self.ticker = ticker
         self.stock_object = yf.Ticker(self.ticker)
@@ -59,10 +61,10 @@ class Parent_Strategy:
         plt.subplots_adjust(bottom=0.1)
         plt.title("{} Close Price History".format(self.ticker))
         plt.xlabel("{}/{}/{} to {}/{}/{}".format(start_date[1], start_date[2].split(" ")[0],
-                                                    start_date[0],
-                                                    dt.now().month,
-                                                    dt.now().day,
-                                                    dt.now().year))
+                                                 start_date[0],
+                                                 dt.now().month,
+                                                 dt.now().day,
+                                                 dt.now().year))
         plt.ylabel("Close Price USD ($)")
         plt.legend(loc='upper left')
         plt.show()

@@ -1,10 +1,13 @@
 # Logs all the data for the program's actions
-import util.stock
+from typing import Any, Union
+
+import src.stock
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime
+from datetime import date as day
 import sqlite3 as sql
 
-data_folder = Path("data/")
+data_folder: Union[Path, Any] = Path("data/")
 
 
 class Log:
@@ -26,11 +29,11 @@ class Log:
             conn = sql.connect(self.filename)
             cursor = conn.cursor()
             cursor.execute("CREATE TABLE buy (date VARCHAR, \
-                time VARCHAR, symbol VARCHAR, amount INT, \
+                time VARCHAR, ticker VARCHAR, amount INT, \
                 cost FLOAT)")
             conn.commit()
             cursor.execute('CREATE TABLE sell (date VARCHAR, \
-                time VARCHAR, symbol VARCHAR, amount INT, \
+                time VARCHAR, ticker VARCHAR, amount INT, \
                 cost FLOAT)')
             conn.commit()
             conn.close()
@@ -48,9 +51,9 @@ class Log:
         conn = sql.connect(self.filename)
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO {0} ("date", time, symbol, \
+            'INSERT INTO {0} ("date", time, ticker, \
             amount, cost) VALUES (?,?,?,?,?)'.format(action_type),
-            (data['date'], data['time'], data['symbol'], int(data['amount']),
+            (data['date'], data['time'], data['ticker'], int(data['amount']),
                 float(data['cost']))
         )
         conn.commit()
@@ -71,7 +74,7 @@ class Log:
         data = cursor.fetchall()
         return data
 
-    def buy(self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
+    def buy(self, ticker, amount, date=day.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
         """Populates the self.write() function when purchasing a stock.
 
@@ -83,20 +86,20 @@ class Log:
         date -- the date of purchase (default is current date)
         time -- the time of purchase (default is current time)
         """
-        price = util.stock.price(symbol, amount)
+        price = src.stock.price(ticker, amount)
         data_to_write = {
             "date": date,
             "time": time,
-            "symbol": symbol,
+            "ticker": ticker,
             "amount": amount,
             "cost": price
         }
         self.write(data_to_write, "buy")
 
     def sell(
-            self, symbol, amount, date=date.today().strftime('%Y-%m-%d'),
+            self, ticker, amount, date=day.today().strftime('%Y-%m-%d'),
             time=datetime.now().strftime('%H:%M:%S')):
-        price = util.stock.price(symbol, amount)
+        price = src.stock.price(ticker, amount)
         """Populates the self.sell() function when purchasing a stock.
 
         Arguments:
@@ -110,7 +113,7 @@ class Log:
         data_to_write = {
             "date": date,
             "time": time,
-            "symbol": symbol,
+            "ticker": ticker,
             "amount": amount,
             "cost": price
         }

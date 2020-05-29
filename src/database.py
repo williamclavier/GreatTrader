@@ -1,4 +1,6 @@
-from util.logging import Log
+from typing import Dict
+
+from src.logging import Log
 
 
 def combine(item):
@@ -13,16 +15,18 @@ def combine(item):
     # the second index is the ticker
     if item.lower() == "amount":
         index = 3
+        bought_list: Dict[str, int] = {}
+        sold_list: Dict[str, int] = {}
     elif item.lower() == "cost":
         index = 4
+        bought_list: Dict[str, float] = {}
+        sold_list: Dict[str, float] = {}
     else:
         print("{} isn't a correct option. \
-                (util.database.combine)".format(item))
+                (src.database.combine)".format(item))
         return None
     bought = Log().read("buy")
     sold = Log().read("sell")
-    sold_list = {}
-    bought_list = {}
     for trade in bought:
         # trade: ('2020-04-11', '19:01:34', 'SPY', 3, 834.6)
         if trade[2] in bought_list:

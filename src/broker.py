@@ -1,6 +1,6 @@
-import util.stock
-from util.database import combine
-from util.logging import Log
+import src.stock
+from src.database import combine
+from src.logging import Log
 from pathlib import Path
 import logging
 
@@ -31,16 +31,16 @@ class LiveBroker:
         ticker -- the ticker to be purchased
         amount -- the quantity of stocks to be purchased
         """
-        price = util.stock.price(ticker, amount)
+        price = src.stock.price(ticker, amount)
         if self.have_enough_money(price):
             # purchase stock
             self.decrease_bal(price)
             # Log it
-            self.Log.buy(symbol, amount)
+            self.Log.buy(ticker, amount)
             self.logger.info("Buy: {} x{} @ ${} each. Balance: {} \
                     Holdings: {} Total: {}".format(
-                        symbol, amount, price, self.balance, self.holdings(),
-                        self.valuation()))
+                        ticker, amount, price, self.balance, self.holdings("temp"),
+                        self.holdings()))
             return True
         else:
             return False
@@ -53,7 +53,7 @@ class LiveBroker:
         amount -- the quantity of stocks to be sold
         """
         # Check if you have that many stocks available
-        price = util.stock.price(ticker, amount)
+        price = src.stock.price(ticker, amount)
         trades = combine("amount")
         combined_list = {
             key: trades[0][key] - trades[1].get(key, 0)
@@ -65,16 +65,16 @@ class LiveBroker:
                 available = combined_list[owned_ticker]
         # used to be "if amount <= available:
         if amount <= available:
-            self.Log.sell(symbol, amount)
+            self.Log.sell(ticker, amount)
             self.logger.info("Sell: {} x{} @ ${} each. Balance: {} \
                         Holdings: {} Total: {}".format(
                             ticker, amount, price, self.balance,
-                            self.holdings(), self.balance + self.holdings()))
+                            self.holdings("temp"), self.holdings()))
             return True
         else:
             return False
 
-    def holdings(self):
+    def holdings(self, amount="total"):
         # global Combined remove this later if no issues
         total = 0
         trades = combine('cost')
@@ -93,7 +93,7 @@ class LiveBroker:
         }
         subtotal = 0
         for stock in combined_list:
-            subtotal += util.stock.price(stock, combined_list[stock])
+            subtotal += src.stock.price(stock, combined_list[stock])
         if amount == "total":
             return round(subtotal + total, 4) + self.balance
         elif amount == "temp" or amount == "current":
@@ -110,17 +110,22 @@ class LiveBroker:
         }
         return combined_list
 
-    def have_enough_money(self, cost, amount):
+    def have_enough_money(self, cost):
         """Performs simple math to verify you can afford the stocks.
 
         Arguments:
-        cost -- the cost of one singular stock
-        amount -- the amount of stocks to be purchased
+        cost -- the cost the stocks
 
         Returns:
         Bool -- if it is affordable, will return True
         """
-        if self.balance >= round((cost * amount), 4):
+        if self.balance >= cost:
             return True
         else:
             return False
+
+    def decrease_bal(self, value):
+        self.balance = round(self.balance - value, 4)
+
+    def increase_bal(self, value):
+        self.balance = round(self.balance + value, 4)

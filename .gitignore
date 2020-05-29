@@ -15,12 +15,13 @@
 /data/Virtual.db
 /data/Real.db
 
+*.log
 
 # Testing based ignores
 test.py
 
 # Experimental Files
-util/exceptions.py
+src/exceptions.py
 
 strategies/*
 /strategies/
