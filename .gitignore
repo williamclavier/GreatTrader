@@ -10,6 +10,8 @@
 /env/
 /env/*
 **__pycache__/
+/pythonenv3.8/
+.pythonenv3.8/*
 
 # Data
 /data/Virtual.db
