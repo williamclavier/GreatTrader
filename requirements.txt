@@ -13,7 +13,7 @@ requests==2.23.0
 six==1.14.0
 urllib3==1.25.8
 pandas==1.0.3
-lxml==4.6.2
+lxml==4.6.3
 
 matplotlib==3.2.1
 art==4.7
