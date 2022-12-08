@@ -2,7 +2,7 @@
 
 # yfinance:
 yfinance==0.1.54
-certifi==2020.4.5.1
+certifi==2022.12.7
 chardet==3.0.4
 idna==2.9
 multitasking==0.0.9
